@@ -32,6 +32,10 @@ too.
 You can generate a PDF or an HTML copy of this guide using
 [Transmuter](https://github.com/TechnoGate/transmuter).
 
+Translations of the guide are available in the following languages:
+
+* [Korean](https://github.com/kwakbab/clojure-style-guide/blob/master/README-koKO.md)
+
 ## Table of Contents
 
 * [Source Code Layout & Organization](#source-code-layout--organization)
@@ -277,7 +281,7 @@ when there are no arguments on the same line as the function name.
       ([x y]
        (+ x y)))
 
-    ;; okay - the other arities are applications of the two-arity 
+    ;; okay - the other arities are applications of the two-arity
     (defn foo
       "I have two arities."
       ([x y]
@@ -958,21 +962,22 @@ hints for the pairwise grouping with comments or empty lines.
 
     ;; ok-ish
     (cond
-    ;; test case 1
-    (test1)
-    (long-function-name-which-requires-a-new-line
-       (complicated-sub-form
+      ;; test case 1
+      (test1)
+      (long-function-name-which-requires-a-new-line
+        (complicated-sub-form
           (-> 'which-spans multiple-lines)))
 
-    (test2)
-    (another-very-long-function-name
-       (yet-another-sub-form
+      ;; test case 2
+      (test2)
+      (another-very-long-function-name
+        (yet-another-sub-form
           (-> 'which-spans multiple-lines)))
 
-    :else
-    (the-fall-through-default-case
-      (which-also-spans 'multiple
-                        'lines)))
+      :else
+      (the-fall-through-default-case
+        (which-also-spans 'multiple
+                          'lines)))
     ```
 
 * <a name="set-as-predicate"></a>
