@@ -26,8 +26,13 @@
 클로저 개발 커뮤니티에서 [라이브러리를 위한 코딩 표준](http://dev.clojure.org/display/community/Library+Coding+Standards)
 목록을 정리하는 것도 주목해라.
 
-이 가이드는 [Transmuter](https://github.com/TechnoGate/transmuter)를 통해
+이 가이드는 [Pandoc](http://pandoc.org/)를 통해
 PDF나 HTML로 복사해 갈 수 있다.
+
+아래 언어로 번역된 가이드가 있다:
+
+* [일본어](https://github.com/totakke/clojure-style-guide/blob/ja/README.md)
+* [한글](https://github.com/kwakbab/clojure-style-guide/blob/master/README-koKO.md)
 
 ## Table of Contents
 
@@ -43,6 +48,7 @@ PDF나 HTML로 복사해 갈 수 있다.
     * [주석어노테이션](#주석어노테이션)
 * [그밖에](#그밖에)
 * [도구들](#도구들)
+* [테스트](#테스트)
 
 ## 소스코드 레이아웃 & 구조
 
@@ -647,18 +653,6 @@ PDF나 HTML로 복사해 갈 수 있다.
          (filter even? (range 1 10)))
     ```
 
-* <a name="dot-dot-macro"></a>
-  자바를 사용하면서 체이닝 메서드를 호출할 때 `->`보다 `..`를 권한다.
-<sup>[[link](#dot-dot-macro)]</sup>
-
-    ```Clojure
-    ;; 좋은 예
-    (-> (System/getProperties) (.get "os.name"))
-
-    ;; 더 좋은 예
-    (.. System getProperties (get "os.name"))
-    ```
-
 * <a name="else-keyword-in-cond"></a>
   `cond`에서 모든 경우의 조건표현식을 처리할 때는 `:else` 키워드를 쓴다.
 <sup>[[link](#else-keyword-in-cond)]</sup>
@@ -686,14 +680,14 @@ PDF나 HTML로 복사해 갈 수 있다.
     (cond
       (= x 10) :ten
       (= x 20) :twenty
-      (= x 30) :forty
+      (= x 30) :thirty
       :else :dunno)
 
     ;; 훨씬 좋은 예
     (condp = x
       10 :ten
       20 :twenty
-      30 :forty
+      30 :thirty
       :dunno)
     ```
 
@@ -792,10 +786,10 @@ PDF나 HTML로 복사해 갈 수 있다.
 <sup>[[link](#list-star-instead-of-nested-cons)]</sup>
 
     ```Clojure
-    # 좋은 예
+    ;; 좋은 예
     (list* 1 2 3 [4 5])
 
-    # 나쁜 예
+    ;;나쁜 예
     (cons 1 (cons 2 (cons 3 [4 5])))
 
     ```
@@ -1386,6 +1380,31 @@ PDF나 HTML로 복사해 갈 수 있다.
   자동으로 생성해준다.
 * [kibit](https://github.com/jonase/kibit)은 [core.logic](https://github.com/clojure/core.logic)에서
   일반적으로 사용되는 함수나 매크로등의 코드 패턴을 기반으로, 정적 코드 분석을 해주는 툴이다.
+
+## 테스트
+
+* <a name="test-directory-structure"></a>
+  테스트 코드는 분리된 디렉토리에 저장한다. 보통 `src/yourproject/` 대신 `test/yourproject/`에 저장한다.
+  빌드 툴은 필요한 컨텍스트 안에서 이 파일들을 처리할 책임이 있다; 대부분의 템플릿은 이것을 자동으로 준다.
+  <sup>[[link](#test-directory-structure)]</sup>
+
+* <a name="test-ns-naming"></a>
+  테스트 네임스페이스는 `yourproject.something-test`과 같이 이름 붙이고 파일은 보통
+  `test/yourproject/something_test.clj`(또는 `.cljc`, `.cljs`)로 만든다.
+  <sup>[[link](#test-ns-naming)]</sup>
+
+* <a name="test-naming"></a>`clojure.test`를 사용할 때 `deftest`를 사용해 정의하는 테스트는
+  `something-test`로 이름을 붙인다.
+  ```clojure
+  ;; 좋은 예
+  (deftest something-test ...)
+
+  ;; 나쁜 예
+  (deftest something-tests ...)
+  (deftest test-something ...)
+  (deftest something ...)
+  ```
+  <sup>[[link](#test-naming)]</sup>
 
 # 참여하기
 
