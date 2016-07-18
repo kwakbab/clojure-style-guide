@@ -30,10 +30,11 @@ Please note, that the Clojure developing community maintains a list of
 too.
 
 You can generate a PDF or an HTML copy of this guide using
-[Transmuter](https://github.com/TechnoGate/transmuter).
+[Pandoc](http://pandoc.org/).
 
 Translations of the guide are available in the following languages:
 
+* [Japanese](https://github.com/totakke/clojure-style-guide/blob/ja/README.md)
 * [Korean](https://github.com/kwakbab/clojure-style-guide/blob/master/README-koKO.md)
 
 ## Table of Contents
@@ -50,6 +51,7 @@ Translations of the guide are available in the following languages:
     * [Comment Annotations](#comment-annotations)
 * [Existential](#existential)
 * [Tooling](#tooling)
+* [Testing](#testing)
 
 ## Source Code Layout & Organization
 
@@ -818,7 +820,7 @@ pairwise constructs as found in e.g. `let` and `cond`.
     exists in the form of a separate function (e.g. `even?` and `odd?`).
 
 * <a name="comp"></a>
-  Leverage `comp` when it would yield simpler code.
+  Leverage `comp` when doing so yields simpler code.
 <sup>[[link](#comp)]</sup>
 
     ```Clojure
@@ -832,7 +834,7 @@ pairwise constructs as found in e.g. `let` and `cond`.
     ```
 
 * <a name="partial"></a>
-  Leverage `partial` when it would yield simpler code.
+  Leverage `partial` when doing so yields simpler code.
 <sup>[[link](#partial)]</sup>
 
     ```Clojure
@@ -869,18 +871,6 @@ pairwise constructs as found in e.g. `let` and `cond`.
          (filter even? (range 1 10)))
     ```
 
-* <a name="dot-dot-macro"></a>
-  Prefer `..` to `->` when chaining method calls in Java interop.
-<sup>[[link](#dot-dot-macro)]</sup>
-
-    ```Clojure
-    ;; good
-    (-> (System/getProperties) (.get "os.name"))
-
-    ;; better
-    (.. System getProperties (get "os.name"))
-    ```
-
 * <a name="else-keyword-in-cond"></a>
   Use `:else` as the catch-all test expression in `cond`.
 <sup>[[link](#else-keyword-in-cond)]</sup>
@@ -909,14 +899,14 @@ pairwise constructs as found in e.g. `let` and `cond`.
     (cond
       (= x 10) :ten
       (= x 20) :twenty
-      (= x 30) :forty
+      (= x 30) :thirty
       :else :dunno)
 
     ;; much better
     (condp = x
       10 :ten
       20 :twenty
-      30 :forty
+      30 :thirty
       :dunno)
     ```
 
@@ -1017,12 +1007,11 @@ hints for the pairwise grouping with comments or empty lines.
 <sup>[[link](#list-star-instead-of-nested-cons)]</sup>
 
     ```Clojure
-    # good
+    ;; good
     (list* 1 2 3 [4 5])
 
-    # bad
+    ;; bad
     (cons 1 (cons 2 (cons 3 [4 5])))
-
     ```
 
 * <a name="sugared-java-interop"></a>
@@ -1204,7 +1193,7 @@ hints for the pairwise grouping with comments or empty lines.
 <sup>[[link](#dont-flag-constants)]</sup>
 
 * <a name="underscore-for-unused-bindings"></a>
-  Use `_` for destructuring targets and formal arguments names whose
+  Use `_` for destructuring targets and formal argument names whose
   value will be ignored by the code at hand.
 <sup>[[link](#underscore-for-unused-bindings)]</sup>
 
@@ -1643,14 +1632,43 @@ you need to comment out a particular form.
 There are some tools created by the Clojure community that might aid you
 in your endeavor to write idiomatic Clojure code.
 
-* [Slamhound](https://github.com/technomancy/slamhound) is a tool that
-will automatically generate proper `ns` declarations from your
-existing code.
-* [kibit](https://github.com/jonase/kibit) is a static code analyzer
-  for Clojure which uses
-  [core.logic](https://github.com/clojure/core.logic) to search for
-  patterns of code for which there might exist a more idiomatic
+* [Slamhound](https://github.com/technomancy/slamhound) is a tool that will
+  automatically generate proper `ns` declarations from your existing code.
+
+* [kibit](https://github.com/jonase/kibit) is a static code analyzer for
+  Clojure which uses [core.logic](https://github.com/clojure/core.logic) to
+  search for patterns of code for which there might exist a more idiomatic
   function or macro.
+
+## Testing
+
+ * <a name="test-directory-structure"></a>
+   Store your tests in a separate directory, typically `test/yourproject/` (as
+   opposed to `src/yourproject/`). Your build tool is responsible for making
+   them available in the contexts where they are necessary; most templates
+   will do this for you automatically.
+   <sup>[[link](#test-directory-structure)]</sup>
+
+ * <a name="test-ns-naming"></a>
+   Name your ns `yourproject.something-test`, a file which usually lives in
+   `test/yourproject/something_test.clj` (or `.cljc`, `cljs`).
+   <sup>[[link](#test-ns-naming)]</sup>
+
+ * <a name="test-naming"></a> When using `clojure.test`, define your tests
+   with `deftest` and name them `something-test`. For example:
+
+   ```clojure
+   ;; good
+   (deftest something-test ...)
+
+   ;; bad
+   (deftest something-tests ...)
+   (deftest test-something ...)
+   (deftest something ...)
+   ```
+
+   <sup>[[link](#test-naming)]</sup>
+
 
 # Contributing
 
