@@ -34,8 +34,11 @@ You can generate a PDF or an HTML copy of this guide using
 
 Translations of the guide are available in the following languages:
 
+* [Chinese](https://github.com/geekerzp/clojure-style-guide/blob/master/README-zhCN.md)
 * [Japanese](https://github.com/totakke/clojure-style-guide/blob/ja/README.md)
 * [Korean](https://github.com/kwakbab/clojure-style-guide/blob/master/README-koKO.md)
+* [Portuguese](https://github.com/theSkilled/clojure-style-guide/blob/pt-BR/README.md) (Under progress)
+* [Russian](https://github.com/Nondv/clojure-style-guide/blob/master/ru/README.md)
 
 ## Table of Contents
 
@@ -49,9 +52,11 @@ Translations of the guide are available in the following languages:
 * [Macros](#macros)
 * [Comments](#comments)
     * [Comment Annotations](#comment-annotations)
+* [Documentation](#documentation)
 * [Existential](#existential)
 * [Tooling](#tooling)
 * [Testing](#testing)
+* [Library Organization](#library-organization)
 
 ## Source Code Layout & Organization
 
@@ -196,27 +201,6 @@ when there are no arguments on the same line as the function name.
       (baz x))
     ```
 
-* <a name="docstring-after-fn-name"></a>
-  When adding a docstring – especially to a function using the above form – take
-  care to correctly place the docstring after the function name, not after the
-  argument vector.  The latter is not invalid syntax and won’t cause an error,
-  but includes the string as a form in the function body without attaching it to
-  the var as documentation.
-<sup>[[link](#docstring-after-fn-name)]</sup>
-
-    ```Clojure
-    ;; good
-    (defn foo
-      "docstring"
-      [x]
-      (bar x))
-
-    ;; bad
-    (defn foo [x]
-      "docstring"
-      (bar x))
-    ```
-
 * <a name="oneline-short-fn"></a>
   Optionally omit the new line between the argument vector and a short
   function body.
@@ -299,26 +283,6 @@ when there are no arguments on the same line as the function name.
       ([x y z] (foo x (foo y z)))
       ([x y] (+ x y))
       ([w x y z & more] (reduce foo (foo w (foo x (foo y z))) more)))
-    ```
-
-* <a name="align-docstring-lines"></a>
-  Indent each line of multi-line docstrings.
-<sup>[[link](#align-docstring-lines)]</sup>
-
-    ```Clojure
-    ;; good
-    (defn foo
-      "Hello there. This is
-      a multi-line docstring."
-      []
-      (bar))
-
-    ;; bad
-    (defn foo
-      "Hello there. This is
-    a multi-line docstring."
-      []
-      (bar))
     ```
 
 * <a name="crlf"></a>
@@ -473,7 +437,7 @@ pairwise constructs as found in e.g. `let` and `cond`.
 
     ;; good
     (ns examples.ns
-      (:require [clojure.zip :refer [lefts rights]))
+      (:require [clojure.zip :refer [lefts rights]]))
 
     ;; acceptable as warranted
     (ns examples.ns
@@ -878,15 +842,15 @@ pairwise constructs as found in e.g. `let` and `cond`.
     ```Clojure
     ;; good
     (cond
-      (< n 0) "negative"
-      (> n 0) "positive"
-      :else "zero"))
+      (neg? n) "negative"
+      (pos? n) "positive"
+      :else "zero")
 
     ;; bad
     (cond
-      (< n 0) "negative"
-      (> n 0) "positive"
-      true "zero"))
+      (neg? n) "negative"
+      (pos? n) "positive"
+      true "zero")
     ```
 
 * <a name="condp"></a>
@@ -1613,6 +1577,187 @@ you need to comment out a particular form.
   sure to document them in your project's `README` or similar.
 <sup>[[link](#document-annotations)]</sup>
 
+## Documentation
+
+Docstrings are the primary way to document Clojure code. Many definition forms
+(e.g. `def`, `defn`, `defmacro`, `ns`)
+support docstrings and usually it's a good idea to make good use of them, regardless
+of whether the var in question is something public or private.
+
+If a definition form doesn't support docstrings directly you can still supply them via
+the `:doc` metadata attribute.
+
+This section outlines some of the common conventions and best
+practices for documenting Clojure code.
+
+
+* <a name="prefer-docstrings"></a>
+  If a form supports docstrings directly prefer them over using `:doc` metadata:
+  <sup>[[link](#prefer-docstrings)]</sup>
+
+```clojure
+;; good
+(defn foo
+  "This function doesn't do much."
+  []
+  ...)
+
+(ns foo.bar.core
+  "That's an awesome library.")
+
+;; bad
+(defn foo
+  ^{:doc "This function doesn't do much."}
+  []
+  ...)
+
+(ns ^{:doc "That's an awesome library.")
+  foo.bar.core)
+```
+
+* <a name="docstring-summary"></a>
+Let the first line in the doc string be a complete, capitalized
+sentence which concisely describes the var in question. This makes it
+easy for tooling (Clojure editors and IDEs) to display a short a summary of
+the docstring at various places.
+<sup>[[link](#docstring-summary)]</sup>
+
+```clojure
+;; good
+(defn frobnitz
+  "This function does a frobnitz.
+  It will do gnorwatz to achieve this, but only under certain
+  cricumstances."
+  []
+  ...)
+
+;; bad
+(defn frobnitz
+  "This function does a frobnitz. It will do gnorwatz to
+  achieve this, but only under certain cricumstances."
+  []
+  ...)
+```
+
+* <a name="document-pos-arguments"></a>
+Document all positional arguments, and wrap them them with backticks
+(\`) so that editors and IDEs can identify them and potentially provide extra
+functionality for them.
+<sup>[[link](#document-pos-arguments)]</sup>
+
+```clojure
+;; good
+(defn watsitz
+  "Watsitz takes a `frob` and converts it to a znoot.
+  When the `frob` is negative, the znoot becomes angry."
+  [frob]
+  ...)
+
+;; bad
+(defn watsitz
+  "Watsitz takes a frob and converts it to a znoot.
+  When the frob is negative, the znoot becomes angry."
+  [frob]
+  ...)
+```
+
+* <a name="document-references"></a>
+Wrap any var references in the docstring with \` so that tooling
+can identify them.
+<sup>[[link](#document-references)]</sup>
+
+```clojure
+;; good
+(defn wombat
+  "Acts much like `clojure.core/identity` except when it doesn't.
+  Takes `x` as an argument and returns that. If it feels like it."
+  [x]
+  ...)
+
+;; bad
+(defn wombat
+  "Acts much like clojure.core/identity except when it doesn't.
+  Takes `x` as an argument and returns that. If it feels like it."
+  [x]
+  ...)
+```
+
+* <a name="docstring-grammar"></a> Docstrings should be comprised from
+proper English sentences - this means every sentences should start
+with an capitalized word and should end with the proper punctuation. Sentences
+should be separated with a single space.
+<sup>[[link](#docstring-grammar)]</sup>
+
+```clojure
+;; good
+(def foo
+  "All sentences should end with a period (or maybe an exclamation mark).
+  And the period should be followed by a space, unless it's the last sentence.")
+
+;; bad
+(def foo
+  "all sentences should end with a period (or maybe an exclamation mark).
+  And the period should be followed by a space, unless it's the last sentence")
+```
+
+* <a name="docstring-indentation"></a>
+Indent multi-line docstrings by two spaces.
+<sup>[[link](#docstring-indentation)]</sup>
+
+```clojure
+;; good
+(ns my.ns
+  "It is actually possible to document a ns.
+  It's a nice place to describe the purpose of the namespace and maybe even
+  the overall conventions used. Note how _not_ indenting the doc string makes
+  it easier for tooling to display it correctly.")
+
+;; bad
+(ns my.ns
+  "It is actually possible to document a ns.
+It's a nice place to describe the purpose of the namespace and maybe even
+the overall conventions used. Note how _not_ indenting the doc string makes
+it easier for tooling to display it correctly.")
+```
+
+* <a name="docstring-leading-trailing-whitespace"></a>
+Neither start nor end your doc strings with any whitespace.
+<sup>[[link](#docstring-leading-trailing-whitespace)]</sup>
+
+```clojure
+;; good
+(def foo
+  "I'm so awesome."
+  42)
+
+;; bad
+(def silly
+  "    It's just silly to start a doc string with spaces.
+  Just as silly as it is to end it with a bunch of them.      "
+  42)
+```
+
+* <a name="docstring-after-fn-name"></a>
+  When adding a docstring – especially to a function using the above form – take
+  care to correctly place the docstring after the function name, not after the
+  argument vector.  The latter is not invalid syntax and won’t cause an error,
+  but includes the string as a form in the function body without attaching it to
+  the var as documentation.
+<sup>[[link](#docstring-after-fn-name)]</sup>
+
+```Clojure
+;; good
+(defn foo
+  "docstring"
+  [x]
+  (bar x))
+
+;; bad
+(defn foo [x]
+  "docstring"
+  (bar x))
+```
+
 ## Existential
 
 * <a name="be-functional"></a>
@@ -1654,8 +1799,10 @@ in your endeavor to write idiomatic Clojure code.
    `test/yourproject/something_test.clj` (or `.cljc`, `cljs`).
    <sup>[[link](#test-ns-naming)]</sup>
 
- * <a name="test-naming"></a> When using `clojure.test`, define your tests
-   with `deftest` and name them `something-test`. For example:
+ * <a name="test-naming"></a>
+   When using `clojure.test`, define your tests
+   with `deftest` and name them `something-test`.
+   <sup>[[link](#test-naming)]</sup>
 
    ```clojure
    ;; good
@@ -1667,8 +1814,32 @@ in your endeavor to write idiomatic Clojure code.
    (deftest something ...)
    ```
 
-   <sup>[[link](#test-naming)]</sup>
+## Library Organization
 
+ * <a name="lib-coordinates"></a>
+   If you are publishing libraries to be used by others, make sure to
+   follow the [Central Repository
+   guidelines](http://central.sonatype.org/pages/choosing-your-coordinates.html)
+   for choosing your `groupId` and `artifactId`. This helps to prevent
+   name conflicts and facilitates the widest possible use. A good
+   example is [Component](https://github.com/stuartsierra/component).
+   <sup>[[link](#lib-coordinates)]</sup>
+
+ * <a name="lib-min-dependencies"></a>
+   Avoid unnecessary dependencies. For example, a three-line utility
+   function copied into a project is usually better than a dependency
+   that drags in hundreds of vars you do not plan to use.
+   <sup>[[link](#lib-min-dependencies)]</sup>
+
+ * <a name="lib-core-separate-from-tools"></a>
+   Deliver core functionality and integration points in separate
+   artifacts.  That way, consumers can consume your library without
+   being constrained by your unrelated tooling prefences. For example,
+   [Component](https://github.com/stuartsierra/component) provides
+   core functionality, and
+   [reloaded](https://github.com/stuartsierra/reloaded) provides leiningen
+   integration.
+   <sup>[[link](#lib-core-separate-from-tools)]</sup>
 
 # Contributing
 
