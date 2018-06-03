@@ -660,14 +660,14 @@ PDF나 HTML로 복사해 갈 수 있다.
     ```Clojure
     ;; 좋은 예
     (cond
-      (< n 0) "negative"
-      (> n 0) "positive"
+      (neg? n) "negative"
+      (pos? n) "positive"
       :else "zero"))
 
     ;; 나쁜 예
     (cond
-      (< n 0) "negative"
-      (> n 0) "positive"
+      (neg? 0) "negative"
+      (pos? 0) "positive"
       true "zero"))
     ```
 
@@ -1357,6 +1357,41 @@ PDF나 HTML로 복사해 갈 수 있다.
 * <a name="document-annotations"></a>
   다른 어노테이션 키워들은 필요에 따라 작성하고 `README` 같은 곳에 정리해둔다.
 <sup>[[link](#document-annotations)]</sup>
+
+## 문서화
+
+Docstring은 클로저 코드를 문서화하는 기본적인 방법이다. 여러 정의 구문은 docstring을 지원하고
+(예: `def`, `defn`, `defmacro`, `ns`) var가 공개든 비공개든 상관 없이 docstring을 잘
+사용하는 것이 좋다.
+
+Docstring을 지원하지 않는 경우에는 `:doc` 메타데이터 속성에 추가하면 된다.
+
+이 장은 클로저 코드를 문서화하는 일반적인 컨벤션과 잘 사용한 예를 다룬다.
+
+* <a name="prefer-docstrings"></a>
+  만약 구문이 docstring을 직접 지원하면 `:doc` 메타데이터를 사용하기 보다 직접 지원하는 docstring을
+  사용한다.
+  <sup>[[link](#prefer-docstrings)]</sup>
+
+```clojure
+;; 좋은 예
+(defn foo
+  "This function doesn't do much."
+  []
+  ...)
+
+(ns foo.bar.core
+  "That's an awesome library.")
+
+;; 나쁜 예
+(defn foo
+  ^{:doc "This function doesn't do much."}
+  []
+  ...)
+
+(ns ^{:doc "That's an awesome library.")
+  foo.bar.core)
+```
 
 ## 그밖에
 
