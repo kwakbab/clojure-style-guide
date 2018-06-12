@@ -1394,6 +1394,63 @@ Docstring을 지원하지 않는 경우에는 `:doc` 메타데이터 속성에 �
   foo.bar.core)
 ```
 
+* <a name="document-references"></a>
+docstring에 var 참조가 있는 경우 툴에서 사용할 수 있도록 \`와 함께 쓴다.
+<sup>[[link](#document-references)]</sup>
+
+```clojure
+;; 좋은 예
+(defn wombat
+  "Acts much like `clojure.core/identity` except when it doesn't.
+  Takes `x` as an argument and returns that. If it feels like it."
+  [x]
+  ...)
+
+;; 나쁜 예
+(defn wombat
+  "Acts much like clojure.core/identity except when it doesn't.
+  Takes `x` as an argument and returns that. If it feels like it."
+  [x]
+  ...)
+```
+
+* <a name="docstring-indentation"></a>
+docstring이 여러 줄이면 두개의 공백으로 들여쓰기한다.
+<sup>[[link](#docstring-indentation)]</sup>
+
+```clojure
+;; 좋은 예
+(ns my.ns
+  "It is actually possible to document a ns.
+  It's a nice place to describe the purpose of the namespace and maybe even
+  the overall conventions used. Note how _not_ indenting the doc string makes
+  it easier for tooling to display it correctly.")
+
+;; 나쁜 예
+(ns my.ns
+  "It is actually possible to document a ns.
+It's a nice place to describe the purpose of the namespace and maybe even
+the overall conventions used. Note how _not_ indenting the doc string makes
+it easier for tooling to display it correctly.")
+```
+
+* <a name="docstring-leading-trailing-whitespace"></a>
+doc string 앞 뒤에는 공백을 사용하지 않는다.
+<sup>[[link](#docstring-leading-trailing-whitespace)]</sup>
+
+```clojure
+;; 좋은 예
+(def foo
+  "I'm so awesome."
+  42)
+
+;; 나쁜 예
+(def silly
+  "    It's just silly to start a doc string with spaces.
+  Just as silly as it is to end it with a bunch of them.      "
+  42)
+```
+
 ## 그밖에
 
 * <a name="be-functional"></a>
