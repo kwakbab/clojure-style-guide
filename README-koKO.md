@@ -1394,6 +1394,49 @@ Docstring을 지원하지 않는 경우에는 `:doc` 메타데이터 속성에 �
   foo.bar.core)
 ```
 
+* <a name="docstring-summary"></a>
+docstring의 첫번째 줄은 대문자로 시작하며 var를 간결하게 설명하는 완전한 문장으로 작성한다.
+그렇게 하면 Clojure 에디터나 IDE 같은 툴의 다양한 곳에서 쉽게 docstring 요약을 보여줄 수 있다.
+<sup>[[link](#docstring-summary)]</sup>
+
+```clojure
+;; 좋은 예
+(defn frobnitz
+  "This function does a frobnitz.
+  It will do gnorwatz to achieve this, but only under certain
+  cricumstances."
+  []
+  ...)
+
+;; 나쁜 예
+(defn frobnitz
+  "This function does a frobnitz. It will do gnorwatz to
+  achieve this, but only under certain cricumstances."
+  []
+  ...)
+```
+
+* <a name="document-pos-arguments"></a>
+모든 위치의 인자를 문서화하고 백틱(\`)으로 감싼다. 그래야 에디터나 IDE가 인식해서 잠재적 추가 기능을
+제공할 수 있다.
+<sup>[[link](#document-pos-arguments)]</sup>
+
+```clojure
+;; 좋은 예
+(defn watsitz
+  "Watsitz takes a `frob` and converts it to a znoot.
+  When the `frob` is negative, the znoot becomes angry."
+  [frob]
+  ...)
+
+;; 나쁜 예
+(defn watsitz
+  "Watsitz takes a frob and converts it to a znoot.
+  When the frob is negative, the znoot becomes angry."
+  [frob]
+  ...)
+```
+
 * <a name="document-references"></a>
 docstring에 var 참조가 있는 경우 툴에서 사용할 수 있도록 \`와 함께 쓴다.
 <sup>[[link](#document-references)]</sup>
@@ -1412,6 +1455,22 @@ docstring에 var 참조가 있는 경우 툴에서 사용할 수 있도록 \`와
   Takes `x` as an argument and returns that. If it feels like it."
   [x]
   ...)
+```
+
+* <a name="docstring-grammar"></a> docstring은 적절한 영어 구문으로 되어 있어야 한다. 그래서
+문장은 대문자로 시작하며 적절한 부호로 마쳐야한다. 또 문장은 공백 하나로 구분 되어야 한다.
+<sup>[[link](#docstring-grammar)]</sup>
+
+```clojure
+;; 좋은 예
+(def foo
+  "All sentences should end with a period (or maybe an exclamation mark).
+  And the period should be followed by a space, unless it's the last sentence.")
+
+;; 나쁜 예
+(def foo
+  "all sentences should end with a period (or maybe an exclamation mark).
+  And the period should be followed by a space, unless it's the last sentence")
 ```
 
 * <a name="docstring-indentation"></a>
@@ -1449,6 +1508,25 @@ doc string 앞 뒤에는 공백을 사용하지 않는다.
   "    It's just silly to start a doc string with spaces.
   Just as silly as it is to end it with a bunch of them.      "
   42)
+```
+
+* <a name="docstring-after-fn-name"></a>
+  docstring을 넣을 때 (특히 폼 위에 함수에) 인자 백터 다음에 오지 않고 함수 이름 다음에 오도록
+  주의한다. 백터 다음에 오게 해도 오류가 발생하지 않지만 docstring에 추가되지 않고 함수의 본문에 있는
+  문자열로 인식되버린다.
+<sup>[[link](#docstring-after-fn-name)]</sup>
+
+```Clojure
+;; 좋은 예
+(defn foo
+  "docstring"
+  [x]
+  (bar x))
+
+;; 나쁜 예
+(defn foo [x]
+  "docstring"
+  (bar x))
 ```
 
 ## 그밖에
